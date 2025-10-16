@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Account Age</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        #github-account-age {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        #toggle-theme {
+            margin-bottom: 20px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .dark {
+            background-color: #333;
+            color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .caption {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggle-theme">Toggle Theme</button>
+    <div id="github-account-age">Loading account age...</div>
+    <div id="markdown-output"></div>
+    <footer>
+        <!-- build-id: 2023-10-01T12:00:00Z -->
+    </footer>
+    <script>
+        const toggleThemeButton = document.getElementById('toggle-theme');
+        const body = document.body;
+
+        toggleThemeButton.addEventListener('click', () => {
+            body.classList.toggle('dark');
+        });
+
+        async function loadAccountData() {
+            try {
+                const response = await fetch('./account.json'); // Assuming account creation date is in this JSON
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                const creationDate = new Date(data.created_at);
+                const accountAge = new Date().getFullYear() - creationDate.getFullYear();
+                document.getElementById('github-account-age').innerText = `Account Age: ${accountAge} years (Created on: ${creationDate.toDateString()})`;
+            } catch (error) {
+                document.getElementById('github-account-age').innerText = 'Failed to load data.';
+            }
+        }
+
+        async function loadMarkdown() {
+            try {
+                const response = await fetch('./input.md');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const markdownText = await response.text();
+                const htmlContent = markdownText
+                    .replace(/#/g, '<h1>')
+                    .replace(/\n/g, '<br>'); // Simple markdown parsing
+                document.getElementById('markdown-output').innerHTML = htmlContent;
+            } catch (error) {
+                document.getElementById('markdown-output').innerText = 'Failed to load markdown.';
+            }
+        }
+
+        loadAccountData();
+        loadMarkdown();
+    </script>
+</body>
+</html>
+<!-- build-id: 2025-10-16T12:58:25.156221 -->
